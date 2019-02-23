@@ -41,10 +41,12 @@ int main(int argc, char const *argv[]) {
 		exit(1);
 	}
 	char *s = (char *)malloc(sizeof(char) * 1024);
-	scanf("%s", s);
+	scanf("%[^\n]s", s);
+	getchar();
 	send(pd, s, 1024, 0);
 	while(strcmp(s, "quit") != 0) {
-		scanf("%s", s);
+		scanf("%[^\n]s", s);
+		getchar();
 		send(pd, s, 1024, 0);
 	}
 	free(s);
