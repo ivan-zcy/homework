@@ -1,15 +1,17 @@
 ​	主要是利用所学的C语言网络编程来实现聊天室功能，包括客户端和服务端两个部分。
 
+​	其中客户端需要输入两个参数：参数1为IP地址，参数2为端口
+
 ​	具体效果如下：
 
 用户1的输入：
 
-![User1](./User1.png)
+![User1](./photo/User1.png)
 
 用户2的输入：
 
-![User2](./User2.png)
+![User2](./photo/User2.png)
 
 聊天室（服务器）的显示：
 
-![Socket](./Socket.png)
+![Socket](./photo/Socket.png)
