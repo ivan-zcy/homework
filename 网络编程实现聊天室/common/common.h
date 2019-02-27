@@ -1,5 +1,9 @@
+#ifndef _COMMON_H_
+#define _COMMON_H_
+
 #include <arpa/inet.h>
 #include <ctype.h>
+#include <pthread.h>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -26,11 +30,20 @@
 struct Message {
 	char from[20];
 	int flag;
-	char message[1024];
+	char message[256];
+	Message() {
+		strcpy(from, "");
+		strcpy(message, "");
+		flag = 0;
+	}
 };
 
-//父进程获取到子进程结束后的处理方法
-void handle(int sig);
+
+//服务端父进程、子进程面对强制结束后的处理方法
+void out(int sig);
+
+//客户端父进程、子进程面对强制结束后的处理方法
+void logout(int sig);
 
 //将buffer内容写入Log_file文件中
 int write_log(Message *buffer, char *Log_file);
@@ -42,4 +55,6 @@ int socket_creat(int port);
 int socket_connect(int port, char *host);
 
 //用于获取配置文件中的信息
-int get_conf_val(char *filename, char *key_name, char *val);
+int get_conf_val(char *filename, const char *key_name, char *val);
+
+#endif
