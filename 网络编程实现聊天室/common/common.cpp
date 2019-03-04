@@ -12,18 +12,18 @@ void logout(int sig) {
 	char Log_file[105] = "";
 	FILE *file = NULL;
 	if(get_conf_val(conf_file_client, "Log_File", Log_file) == -1) {
-		_exit(0);
+		_exit(1);
 	}
 
 	//打开日志文件并写入退出信息
 	if ((file = fopen(Log_file, "a+")) == NULL) {
 		perror("fopen faild");
-		_exit(0);
+		_exit(1);
 	}
-	if (fprintf(file, "\033[;43m您已退出登陆\033[0m\n") < 0) {
+	if (fprintf(file, "\033[;33m您已退出登陆\033[0m\n") < 0) {
 		fclose(file);
 		perror("fprintf faild");
-		_exit(0);
+		_exit(1);
 	}
 
 	//关闭文件并退出进程
@@ -33,10 +33,15 @@ void logout(int sig) {
 
 //将buffer内容写入Log_file(日志)文件中
 int write_log(Message *buffer, char *Log_file) {
+	
+	//上锁
+	pthread_mutex_lock(&mid);
+
 	//打开日志文件
 	FILE *file = NULL;
 	if ((file = fopen(Log_file, "a+")) == NULL) {
 		perror("fopen faild");
+		pthread_mutex_unlock(&mid);
 		return -1;
 	}
 
@@ -54,6 +59,9 @@ int write_log(Message *buffer, char *Log_file) {
 
 	//关闭文件
 	fclose(file);
+
+	//解锁
+	pthread_mutex_unlock(&mid);
 	return 0;
 }
 

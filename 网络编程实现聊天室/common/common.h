@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <stdarg.h>
+#include <pthread.h>
 
 #ifdef DEBUG
 	#define DBG(...) printf(__VA_ARGS__)
@@ -38,6 +39,7 @@ struct Message {
 	}
 };
 
+extern pthread_mutex_t mid;
 
 //服务端父进程、子进程面对强制结束后的处理方法
 void out(int sig);

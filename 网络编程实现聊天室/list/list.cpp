@@ -2,8 +2,18 @@
 
 //链表的初始化
 void init(LIST *list) {
-	list -> head = NULL;
 	list -> len = 0;
+	if (list -> head == NULL) {
+		return;
+	}
+	USER *p = list -> head;
+	while(p != NULL) {
+		USER *old = p;
+		p = p -> next;
+		free(old);
+	}
+	list -> head = NULL;
+	return;
 }
 
 //链表的增加
@@ -34,6 +44,7 @@ int del(LIST *list, char *user) {
 		p = p -> next;
 		list -> head = p;
 		list -> len --;
+		free(old);
 		return 0;
 	}
 	while(p -> next != NULL) {
@@ -41,6 +52,7 @@ int del(LIST *list, char *user) {
 		if (strcmp(p -> name, user) == 0) {
 			old -> next = p -> next;
 			list -> len --;
+			free(p);
 			return 0;
 		}
 		old = p;
@@ -55,15 +67,7 @@ void getout(LIST *list, Message *message) {
 
 	//循环给每个用户发送
 	while(p != NULL) {
-		//每次发送建立一个连接
-		char *host = p -> host;
-		int port = p -> port;
-		int pd;
-		if ((pd = socket_connect(port, host)) == -1) {
-			return;
-		}
-		send(pd, message, sizeof(Message), 0);
-		close(pd);
+		send(p -> pd, message, sizeof(Message), 0);
 		p = p -> next;
 	}
 	return;
@@ -77,14 +81,7 @@ int query(LIST *list, char *user, Message *message) {
 	while(p != NULL) {
 		//如果用户名相同，则发送信息并返回0(成功)
 		if (strcmp(p -> name, user) == 0) {
-			char *host = p -> host;
-			int port = p -> port;
-			int pd;
-			if ((pd = socket_connect(port, host)) == -1) {
-				return -1;
-			}
-			send(pd, message, sizeof(Message), 0);
-			close(pd);
+			send(p -> pd, message, sizeof(Message), 0);
 			return 0;
 		}
 		p = p -> next;
@@ -95,18 +92,12 @@ int query(LIST *list, char *user, Message *message) {
 //将信息转发给除该用户以外的所有用户
 void query_other(LIST *list, char *user, Message *message) {
 	USER *p = list -> head;
+
 	//遍历所有当前用户
 	while(p != NULL) {
 		//如果用户名不相同，则发送信息
 		if (strcmp(p -> name, user) != 0) {
-			char *host = p -> host;
-			int port = p -> port;
-			int pd;
-			if ((pd = socket_connect(port, host)) == -1) {
-				return;
-			}
-			send(pd, message, sizeof(Message), 0);
-			close(pd);
+			send(p -> pd, message, sizeof(Message), 0);
 		}
 		p = p -> next;
 	}

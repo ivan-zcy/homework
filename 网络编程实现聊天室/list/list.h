@@ -5,9 +5,8 @@
 
 //用于服务端存储连接用户的信息
 struct USER {
-	char host[20];
 	char name[20];
-	int port;
+	int pd;
 	USER *next;
 };
 
