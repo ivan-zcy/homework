@@ -44,7 +44,7 @@ int reader(LIST *list) {
 	size_t chang = 0;
 
 	//打开文件
-	if ((file = fopen("../userList.txt", "a+")) == NULL) {
+	if ((file = fopen("./userList.txt", "r")) == NULL) {
 		perror("fopen faild\n");
 		return -1;
 	}
@@ -76,6 +76,7 @@ int reader(LIST *list) {
 
 //写者
 int writer(LIST *list) {
+
 	//进队列
 	pthread_mutex_lock(&mutex1);
 	writeCount++;
@@ -89,7 +90,7 @@ int writer(LIST *list) {
 	FILE *file = NULL;
 
 	//打开文件
-	if ((file = fopen("../userList.txt", "w+")) == NULL) {
+	if ((file = fopen("./userList.txt", "w+")) == NULL) {
 		perror("fopen faild\n");
 		return -1;
 	}
@@ -116,9 +117,10 @@ void* wel(void *t) {
 	USER *user = (USER *)t;
 	Message message;
 	char buffer[300];
+	strcpy(message.from, user -> name);
 	LIST list;
 	init(&list);
-	strcpy(message.from, user -> name);
+	
 
 	//循环接收该用户发来的消息
 	while(1) {
@@ -132,6 +134,7 @@ void* wel(void *t) {
 		if (reader(&list) == -1) {
 			break;
 		}
+
 		//不同的输入执行服务器执行不同的操作
 		if (strcmp(buffer, "#") == 0) {
 			char s[256];

@@ -21,17 +21,12 @@ int main() {
 	signal(SIGINT, out);
 	
 	//获取相关配置文件信息
-	char port_string_client[10]="";
 	char port_string_socket[10]="";
 	if (get_conf_val(conf_file_socket, "Server_Port", port_string_socket) == -1) {
 		exit(1);
 	}
-	if (get_conf_val(conf_file_socket, "Client_Port", port_string_client) == -1) {
-		exit(1);
-	}
 	int Server_Port = atoi(port_string_socket);
-	int Client_Port = atoi(port_string_client);
-
+	
 	//初始化服务端和信号量
 	int pd = socket_creat(Server_Port);
 	if (pd == -1) {
@@ -42,12 +37,11 @@ int main() {
 	socklen_t socklen = sizeof(addr_user);
 	bzero(&addr_user, socklen);
 
-
 	//循环接收外界数据
 	while(true) {
 		//初始化链表
 		LIST list;
-		USER user;
+		USER *user = (USER *)malloc(sizeof(USER));
 		Message message;
 		char name[25];
 
@@ -67,16 +61,18 @@ int main() {
 		strcpy(message.from, name);
 
 		//创建用户信息并存入文件
-		strcpy(user.name, name);
-		user.pd = newpd;
-		user.next = NULL;
+		strcpy(user -> name, name);
+		user -> pd = newpd;
+		user ->next = NULL;
 
 		//添加并更新用户链表文件
 		if(reader(&list) == -1) {
 			close(newpd);
 			continue;
 		}
-		add(&list, &user);
+
+		add(&list, user);
+
 		if(writer(&list) == -1) {
 			close(newpd);
 			continue;
@@ -96,7 +92,7 @@ int main() {
 
 		//若接收到，则创建一个线程，循环接收它的所有内容
 		pthread_t pid;
-		pthread_create(&pid, NULL, wel, &user);
+		pthread_create(&pid, NULL, wel, user);
 	}
 
 	over();

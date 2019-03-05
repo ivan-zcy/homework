@@ -14,6 +14,10 @@ struct USER {
 struct LIST {
 	USER *head;
 	int len;
+	LIST() {
+		head = NULL;
+		len = 0;
+	}
 };
 
 //链表的初始化
